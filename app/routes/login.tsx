@@ -1,10 +1,12 @@
+// TODO: Use oauth solution for login
+
 import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { Form, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
 import { verifyLogin } from "~/models/user.server";
@@ -38,7 +40,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
-  if (password.length < 8) {
+  if (password.length < 6) {
     return json(
       { errors: { email: null, password: "Password is too short" } },
       { status: 400 },
@@ -159,18 +161,6 @@ export default function LoginPage() {
               >
                 Remember me
               </label>
-            </div>
-            <div className="text-center text-sm text-gray-500">
-              Don&apos;t have an account?{" "}
-              <Link
-                className="text-blue-500 underline"
-                to={{
-                  pathname: "/join",
-                  search: searchParams.toString(),
-                }}
-              >
-                Sign up
-              </Link>
             </div>
           </div>
         </Form>
