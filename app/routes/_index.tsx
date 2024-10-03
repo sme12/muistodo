@@ -1,7 +1,8 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import { Form, Link, useLoaderData } from "@remix-run/react";
 
+import NewNote from "~/components/new-note";
 import { getNoteListItems } from "~/models/note.server";
 import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
@@ -34,35 +35,32 @@ export default function NotesPage() {
       </header>
 
       <main className="flex h-full bg-white">
-        <div className="h-full w-80 border-r bg-gray-50">
-          <Link to="new" className="block p-4 text-xl text-blue-500">
-            + New Note
-          </Link>
-
-          <hr />
-
-          {data.noteListItems.length === 0 ? (
-            <p className="p-4">No notes yet</p>
-          ) : (
-            <ol>
-              {data.noteListItems.map((note) => (
-                <li key={note.id}>
-                  <NavLink
-                    className={({ isActive }) =>
-                      `block border-b p-4 text-xl ${isActive ? "bg-white" : ""}`
-                    }
-                    to={note.id}
+        <div className="mx-auto flex h-full w-96 flex-col gap-5 border bg-gray-50">
+          <div>
+            {data.noteListItems.length === 0 ? (
+              <p className="p-4">No notes yet</p>
+            ) : (
+              <ol>
+                {data.noteListItems.map((note) => (
+                  <li
+                    key={note.id}
+                    className="flex items-center justify-between gap-2 border-b p-4 text-xl"
                   >
-                    📝 {note.title}
-                  </NavLink>
-                </li>
-              ))}
-            </ol>
-          )}
-        </div>
-
-        <div className="flex-1 p-6">  
-          <Outlet />
+                    <div>📝 {note.body}</div>
+                    <Form action={`api/delete/${note.id}`} method="post">
+                      <button
+                        type="submit"
+                        className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+                      >
+                        X
+                      </button>
+                    </Form>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+          <NewNote />
         </div>
       </main>
     </div>

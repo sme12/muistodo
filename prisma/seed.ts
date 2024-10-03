@@ -25,16 +25,16 @@ async function seed() {
   });
   await prisma.note.create({
     data: {
-      title: "My first note test",
       body: "Hello, world!",
       userId: user.id,
+      date: new Date(),
     },
   });
   await prisma.note.create({
     data: {
-      title: "My second note test",
       body: "Hello, world!",
       userId: user.id,
+      date: new Date(),
     },
   });
   console.log(`Database has been seeded. 🌱`);

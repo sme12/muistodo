@@ -26,9 +26,10 @@ model Password {
 }
 
 model Note {
-  id    String @id @default(cuid())
-  title String
-  body  String
+  id   String @id @default(cuid())
+  body String
+
+  date DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
