@@ -9,11 +9,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const formData = await request.formData();
   const body = formData.get("body");
+  const dateValue = formData.get("date");
+  const date = dateValue ? new Date(dateValue.toString()) : new Date();
 
   if (typeof body !== "string" || body.length === 0) {
     return json({ errors: { body: "Body is required" } }, { status: 400 });
   }
 
-  await createNote({ body, userId });
+  await createNote({ body, date, userId });
   return redirect("/");
 };

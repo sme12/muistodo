@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
+import { format } from "date-fns";
 
 import NewNote from "~/components/new-note";
 import { getNoteListItems } from "~/models/note.server";
@@ -18,7 +19,7 @@ export default function NotesPage() {
   const user = useUser();
 
   return (
-    <div className="flex h-full min-h-screen flex-col">
+    <div className="flex flex-col">
       <header className="flex items-center justify-between bg-slate-800 p-4 text-white">
         <h1 className="text-3xl font-bold">
           <Link to=".">Notes</Link>
@@ -47,6 +48,9 @@ export default function NotesPage() {
                     className="flex items-center justify-between gap-2 border-b p-4 text-xl"
                   >
                     <div>📝 {note.body}</div>
+                    {note.date ? (
+                      <div>{format(note.date, "mm.dd.yy")}</div>
+                    ) : null}
                     <Form action={`api/delete/${note.id}`} method="post">
                       <button
                         type="submit"

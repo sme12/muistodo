@@ -17,20 +17,22 @@ export function getNote({
 export function getNoteListItems({ userId }: { userId: User["id"] }) {
   return prisma.note.findMany({
     where: { userId },
-    select: { id: true, body: true },
-    orderBy: { updatedAt: "desc" },
+    select: { id: true, body: true, date: true },
+    orderBy: { updatedAt: "asc" },
   });
 }
 
 export function createNote({
   body,
   userId,
-}: Pick<Note, "body"> & {
+  date,
+}: Pick<Note, "body" | "date"> & {
   userId: User["id"];
 }) {
   return prisma.note.create({
     data: {
       body,
+      date,
       user: {
         connect: {
           id: userId,
