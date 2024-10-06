@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { formatISO } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -23,18 +24,21 @@ async function seed() {
       },
     },
   });
+  const dateInput = new Date();
+  const dateString = formatISO(dateInput, { representation: "date" }); // 'YYYY-MM-DD'
+
   await prisma.note.create({
     data: {
       body: "Hello, world!",
       userId: user.id,
-      date: new Date(),
+      date: dateString,
     },
   });
   await prisma.note.create({
     data: {
       body: "Hello, world!",
       userId: user.id,
-      date: new Date(),
+      date: dateString,
     },
   });
   console.log(`Database has been seeded. 🌱`);

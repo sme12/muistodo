@@ -1,16 +1,22 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
-import { format } from "date-fns";
+import { format, formatISO } from "date-fns";
 
 import NewNote from "~/components/new-note";
-import { getNoteListItems } from "~/models/note.server";
+import { getNotesListItemsByDate } from "~/models/note.server";
 import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
-  const noteListItems = await getNoteListItems({ userId });
+  const dateValue = ""; // TODO: get from selector
+  const dateInput = dateValue ? new Date(dateValue) : new Date();
+  const date = formatISO(dateInput, { representation: "date" }); // 'YYYY-MM-DD'
+  const noteListItems = await getNotesListItemsByDate({
+    userId,
+    date,
+  });
   return json({ noteListItems });
 };
 
@@ -48,9 +54,7 @@ export default function NotesPage() {
                     className="flex items-center justify-between gap-2 border-b p-4 text-xl"
                   >
                     <div>📝 {note.body}</div>
-                    {note.date ? (
-                      <div>{format(note.date, "mm.dd.yy")}</div>
-                    ) : null}
+                    {note.date ? <div>{note.date}</div> : null}
                     <Form action={`api/delete/${note.id}`} method="post">
                       <button
                         type="submit"
