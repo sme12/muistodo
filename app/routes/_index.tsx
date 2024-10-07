@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
-import { formatISO } from "date-fns";
+import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
+import { formatISO, parseISO } from "date-fns";
 
 import NewNote from "~/components/new-note";
 import { getNotesListItemsByDate } from "~/models/note.server";
@@ -10,19 +10,51 @@ import { useUser } from "~/utils";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
-  const dateValue = ""; // TODO: get from selector
-  const dateInput = dateValue ? new Date(dateValue) : new Date();
+  const url = new URL(request.url);
+  const dateParam = url.searchParams.get("date");
+
+  // Validate and parse the date
+  let dateInput;
+  if (dateParam) {
+    const parsedDate = parseISO(dateParam);
+    if (isNaN(parsedDate.getTime())) {
+      // Invalid date format, default to today or handle as needed
+      dateInput = new Date();
+    } else {
+      dateInput = parsedDate;
+    }
+  } else {
+    dateInput = new Date();
+  }
+
   const date = formatISO(dateInput, { representation: "date" }); // 'YYYY-MM-DD'
+
   const noteListItems = await getNotesListItemsByDate({
     userId,
     date,
   });
-  return json({ noteListItems });
+
+  return json({ noteListItems, selectedDate: date });
 };
 
 export default function NotesPage() {
   const data = useLoaderData<typeof loader>();
   const user = useUser();
+
+  // Use useSearchParams to manage query parameters
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Initialize selectedDate from loader or default to today
+  const initialDate = searchParams.get("date") || data.selectedDate;
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDate = e.target.value;
+    if (newDate) {
+      setSearchParams({ date: newDate });
+    } else {
+      setSearchParams({});
+    }
+  };
 
   return (
     <div className="flex flex-col">
@@ -43,24 +75,40 @@ export default function NotesPage() {
 
       <main className="flex h-full bg-white">
         <div className="mx-auto flex h-full w-96 flex-col gap-5 border bg-gray-50">
+          <div className="flex items-center gap-4 p-4">
+            <label htmlFor="date" className="sr-only font-medium">
+              Select Date:
+            </label>
+            <input
+              id="date"
+              type="date"
+              value={initialDate}
+              onChange={handleDateChange}
+              className="rounded border px-4 py-2"
+            />
+          </div>
           <div>
             {data.noteListItems.length === 0 ? (
-              <p className="p-4">No notes yet</p>
+              initialDate ===
+              formatISO(new Date(), { representation: "date" }) ? (
+                <p className="p-4">
+                  No notes for today. Have you learned something new or want to
+                  add a TODO? Go on!
+                </p>
+              ) : (
+                <p className="p-4">No notes were made on {initialDate}</p>
+              )
             ) : (
               <ol>
                 {data.noteListItems.map((note) => (
                   <li
                     key={note.id}
-                    className="flex items-center justify-between gap-2 border-b p-4 text-xl"
+                    className="flex items-center justify-between gap-2 border-b p-4"
                   >
-                    <div>📝 {note.body}</div>
-                    {note.date ? <div>{note.date}</div> : null}
+                    <div>{note.body}</div>
                     <Form action={`api/delete/${note.id}`} method="post">
-                      <button
-                        type="submit"
-                        className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-                      >
-                        X
+                      <button type="submit" className="text-sm">
+                        ❌
                       </button>
                     </Form>
                   </li>
