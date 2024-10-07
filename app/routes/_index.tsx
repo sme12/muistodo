@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
-import { format, formatISO } from "date-fns";
+import { formatISO } from "date-fns";
 
 import NewNote from "~/components/new-note";
 import { getNotesListItemsByDate } from "~/models/note.server";
