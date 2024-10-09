@@ -1,16 +1,19 @@
+import { UserButton } from "@clerk/remix";
+import { getAuth } from "@clerk/remix/ssr.server";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import { formatISO, parseISO } from "date-fns";
-
 import NewNote from "~/components/new-note";
 import { getNotesListItemsByDate } from "~/models/note.server";
-import { requireUserId } from "~/session.server";
-import { useUser } from "~/utils";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const userId = await requireUserId(request);
-  const url = new URL(request.url);
+export const loader = async (args: LoaderFunctionArgs) => {
+  const { userId } = await getAuth(args);
+  if (!userId) {
+    return redirect("/sign-in");
+  }
+
+  const url = new URL(args.request.url);
   const dateParam = url.searchParams.get("date");
 
   // Validate and parse the date
@@ -39,7 +42,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function NotesPage() {
   const data = useLoaderData<typeof loader>();
-  const user = useUser();
 
   // Use useSearchParams to manage query parameters
   const [searchParams, setSearchParams] = useSearchParams();
@@ -62,15 +64,8 @@ export default function NotesPage() {
         <h1 className="text-3xl font-bold">
           <Link to=".">Notes</Link>
         </h1>
-        <p>{user.email}</p>
-        <Form action="/logout" method="post">
-          <button
-            type="submit"
-            className="rounded bg-slate-600 px-4 py-2 text-blue-100 hover:bg-blue-500 active:bg-blue-600"
-          >
-            Logout
-          </button>
-        </Form>
+        <p>You are signed in!</p>
+        <UserButton />
       </header>
 
       <main className="flex h-full bg-white">

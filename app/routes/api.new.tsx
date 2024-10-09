@@ -1,14 +1,17 @@
+import { getAuth } from "@clerk/remix/ssr.server";
 import type { ActionFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { formatISO } from "date-fns";
-
 import { createNote } from "~/models/note.server";
-import { requireUserId } from "~/session.server";
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const userId = await requireUserId(request);
+export const action = async (args: ActionFunctionArgs) => {
+  const { userId } = await getAuth(args);
 
-  const formData = await request.formData();
+  if (!userId) {
+    return redirect("/sign-in?redirect_url=" + args.request.url);
+  }
+
+  const formData = await args.request.formData();
   const body = formData.get("body");
   const dateValue = formData.get("date");
   const dateInput = dateValue ? new Date(dateValue.toString()) : new Date();

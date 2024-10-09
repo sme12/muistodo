@@ -1,6 +1,11 @@
+import { ClerkApp } from "@clerk/remix";
+import { rootAuthLoader } from "@clerk/remix/ssr.server";
 import { cssBundleHref } from "@remix-run/css-bundle";
-import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type {
+  LinksFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -9,20 +14,24 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-
-import { getUser } from "~/session.server";
 import stylesheet from "~/tailwind.css";
+
+export const meta: MetaFunction = () => [
+  {
+    charset: "utf-8",
+    title: "New Remix App",
+    viewport: "width=device-width,initial-scale=1",
+  },
+];
+
+export const loader: LoaderFunction = (args) => rootAuthLoader(args);
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
 ];
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  return json({ user: await getUser(request) });
-};
-
-export default function App() {
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
       <head>
@@ -32,7 +41,7 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full">
-        <Outlet />
+        {children}
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
@@ -40,3 +49,8 @@ export default function App() {
     </html>
   );
 }
+function App() {
+  return <Outlet />;
+}
+
+export default ClerkApp(App);
