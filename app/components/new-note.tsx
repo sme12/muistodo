@@ -1,40 +1,70 @@
 import { useFetcher } from "@remix-run/react";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 
-export default function NewNote() {
+export default function NewNote({
+  setIsNewNoteActive,
+}: {
+  setIsNewNoteActive: (active: boolean) => void;
+}) {
   const fetcher = useFetcher();
   const isSubmitting = fetcher.state === "submitting";
 
-  // Initialize state for the textarea
   const [body, setBody] = useState("");
 
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
+      setIsNewNoteActive(false);
       setBody("");
     }
-  }, [fetcher.data, fetcher.state]);
+  }, [fetcher.data, fetcher.state, setIsNewNoteActive]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsNewNoteActive(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [fetcher, setIsNewNoteActive]);
   return (
     <fetcher.Form action="api/new" method="post">
       <div className="grid w-full gap-2">
         <Textarea
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
           name="body"
-          rows={8}
-          value={body} // Bind to state
-          onChange={(e) => setBody(e.target.value)} // Handle changes
-          className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
+          rows={4}
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+          className="w-full bg-transparent border-0 focus:"
         />
-        <Button disabled={isSubmitting} type="submit">
-          {isSubmitting ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            "Post"
-          )}
-        </Button>
+        <div className="grid grid-cols-[1fr_auto] gap-4">
+          <Button disabled={isSubmitting} type="submit">
+            {isSubmitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              "Save"
+            )}
+          </Button>
+          <Button
+            type="button"
+            disabled={isSubmitting}
+            variant="destructive"
+            onClick={() => {
+              setIsNewNoteActive(false);
+            }}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </fetcher.Form>
   );

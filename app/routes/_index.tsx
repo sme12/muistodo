@@ -2,10 +2,13 @@ import { UserButton } from "@clerk/remix";
 import { getAuth } from "@clerk/remix/ssr.server";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
+import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import { formatISO, parseISO } from "date-fns";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 import DatePicker from "~/components/date-picker";
-import NewNote from "~/components/new-note";
+import Note from "~/components/note";
+import { Button } from "~/components/ui/button";
 import { getNotesListItemsByDate } from "~/models/note.server";
 
 export const loader = async (args: LoaderFunctionArgs) => {
@@ -45,6 +48,7 @@ export default function NotesPage() {
   const data = useLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();
   const initialDate = searchParams.get("date") || data.selectedDate;
+  const [isNewNoteActive, setIsNewNoteActive] = useState(false);
 
   return (
     <div className="flex flex-col">
@@ -58,7 +62,7 @@ export default function NotesPage() {
       <main>
         <div className="mx-auto flex h-full w-96 flex-col gap-5 border p-5 rounded-md">
           <DatePicker initialDate={initialDate} />
-          <div>
+          <div className="flex flex-col gap-2">
             {data.noteListItems.length === 0 ? (
               initialDate ===
               formatISO(new Date(), { representation: "date" }) ? (
@@ -70,24 +74,21 @@ export default function NotesPage() {
                 <p className="p-4">No notes were made on {initialDate}</p>
               )
             ) : (
-              <ol>
+              <>
                 {data.noteListItems.map((note) => (
-                  <li
-                    key={note.id}
-                    className="flex items-center justify-between gap-2 border-b p-4"
-                  >
-                    <div>{note.body}</div>
-                    <Form action={`api/delete/${note.id}`} method="post">
-                      <button type="submit" className="text-sm">
-                        ❌
-                      </button>
-                    </Form>
-                  </li>
+                  <Note {...note} key={note.id} />
                 ))}
-              </ol>
+              </>
+            )}
+            {isNewNoteActive ? (
+              <Note isNewNote setIsNewNoteActive={setIsNewNoteActive} />
+            ) : (
+              <Button onClick={() => setIsNewNoteActive(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add new note
+              </Button>
             )}
           </div>
-          <NewNote />
         </div>
       </main>
     </div>

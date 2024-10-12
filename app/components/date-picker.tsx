@@ -1,6 +1,7 @@
 import { useSearchParams } from "@remix-run/react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Calendar } from "~/components/ui/calendar";
 import {
@@ -13,6 +14,7 @@ import { cn } from "~/lib/utils";
 export default function DatePicker({ initialDate }: { initialDate: string }) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
+  const [open, setOpen] = useState(false);
 
   const handleDateChange = (date: Date | undefined) => {
     if (date) {
@@ -20,10 +22,11 @@ export default function DatePicker({ initialDate }: { initialDate: string }) {
     } else {
       setSearchParams({});
     }
+    setOpen(false);
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}
