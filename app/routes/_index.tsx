@@ -4,6 +4,7 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import { formatISO, parseISO } from "date-fns";
+import DatePicker from "~/components/date-picker";
 import NewNote from "~/components/new-note";
 import { getNotesListItemsByDate } from "~/models/note.server";
 
@@ -42,46 +43,21 @@ export const loader = async (args: LoaderFunctionArgs) => {
 
 export default function NotesPage() {
   const data = useLoaderData<typeof loader>();
-
-  // Use useSearchParams to manage query parameters
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  // Initialize selectedDate from loader or default to today
+  const [searchParams] = useSearchParams();
   const initialDate = searchParams.get("date") || data.selectedDate;
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newDate = e.target.value;
-    if (newDate) {
-      setSearchParams({ date: newDate });
-    } else {
-      setSearchParams({});
-    }
-  };
 
   return (
     <div className="flex flex-col">
-      <header className="flex items-center justify-between bg-slate-800 p-4 text-white">
+      <header className="flex items-center justify-between p-4 text-white">
         <h1 className="text-3xl font-bold">
-          <Link to=".">Notes</Link>
+          <Link to=".">MuisTODO</Link>
         </h1>
-        <p>You are signed in!</p>
         <UserButton />
       </header>
 
-      <main className="flex h-full bg-white">
-        <div className="mx-auto flex h-full w-96 flex-col gap-5 border bg-gray-50">
-          <div className="flex items-center gap-4 p-4">
-            <label htmlFor="date" className="sr-only font-medium">
-              Select Date:
-            </label>
-            <input
-              id="date"
-              type="date"
-              value={initialDate}
-              onChange={handleDateChange}
-              className="rounded border px-4 py-2"
-            />
-          </div>
+      <main>
+        <div className="mx-auto flex h-full w-96 flex-col gap-5 border p-5 rounded-md">
+          <DatePicker initialDate={initialDate} />
           <div>
             {data.noteListItems.length === 0 ? (
               initialDate ===
