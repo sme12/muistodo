@@ -2,14 +2,12 @@ import { UserButton } from "@clerk/remix";
 import { getAuth } from "@clerk/remix/ssr.server";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { formatISO, parseISO } from "date-fns";
-import { Plus } from "lucide-react";
-import { useState } from "react";
-import DatePicker from "~/components/date-picker";
-import Note from "~/components/note";
-import { Button } from "~/components/ui/button";
+import { useEffect } from "react";
+import NotesFeed from "~/components/notes-feed";
 import { getNotesListItemsByDate } from "~/models/note.server";
+import useNotesStore from "~/store/notes.store";
 
 export const loader = async (args: LoaderFunctionArgs) => {
   const { userId } = await getAuth(args);
@@ -46,9 +44,19 @@ export const loader = async (args: LoaderFunctionArgs) => {
 
 export default function NotesPage() {
   const data = useLoaderData<typeof loader>();
-  const [searchParams] = useSearchParams();
-  const initialDate = searchParams.get("date") || data.selectedDate;
-  const [isNewNoteActive, setIsNewNoteActive] = useState(false);
+  const { setNoteListItems, setSelectedDate, setIsReady } = useNotesStore();
+
+  useEffect(() => {
+    setNoteListItems(data.noteListItems);
+    setSelectedDate(data.selectedDate);
+    setIsReady(true);
+  }, [
+    data.noteListItems,
+    data.selectedDate,
+    setNoteListItems,
+    setSelectedDate,
+    setIsReady,
+  ]);
 
   return (
     <div className="flex flex-col">
@@ -60,36 +68,7 @@ export default function NotesPage() {
       </header>
 
       <main>
-        <div className="mx-auto flex h-full w-96 flex-col gap-5 border p-5 rounded-md">
-          <DatePicker initialDate={initialDate} />
-          <div className="flex flex-col gap-2">
-            {data.noteListItems.length === 0 ? (
-              initialDate ===
-              formatISO(new Date(), { representation: "date" }) ? (
-                <p className="p-4">
-                  No notes for today. Have you learned something new or want to
-                  add a TODO? Go on!
-                </p>
-              ) : (
-                <p className="p-4">No notes were made on {initialDate}</p>
-              )
-            ) : (
-              <>
-                {data.noteListItems.map((note) => (
-                  <Note {...note} key={note.id} />
-                ))}
-              </>
-            )}
-            {isNewNoteActive ? (
-              <Note isNewNote setIsNewNoteActive={setIsNewNoteActive} />
-            ) : (
-              <Button onClick={() => setIsNewNoteActive(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add new note
-              </Button>
-            )}
-          </div>
-        </div>
+        <NotesFeed />
       </main>
     </div>
   );
