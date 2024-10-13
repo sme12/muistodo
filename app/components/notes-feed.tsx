@@ -5,6 +5,7 @@ import NoteCard from "~/components/note-card";
 import { Button } from "~/components/ui/button";
 import useNotesStore from "~/store/notes.store";
 
+import NewNote from "./new-note";
 import { Skeleton } from "./ui/skeleton";
 
 export default function NotesFeed() {
@@ -40,7 +41,7 @@ export default function NotesFeed() {
               </>
             )}
             {isNewNoteActive ? (
-              <NoteCard isNewNote setIsNewNoteActive={setIsNewNoteActive} />
+              <NewNote />
             ) : (
               <Button onClick={() => setIsNewNoteActive(true)}>
                 <Plus className="mr-2 h-4 w-4" />
