@@ -14,19 +14,19 @@ const StaticNote = ({ body, id }: { body: string; id: string }) => (
   </div>
 );
 
-interface NoteProps {
+interface NoteCardProps {
   body?: string;
   id?: string;
   isNewNote?: boolean;
   setIsNewNoteActive?: (active: boolean) => void;
 }
 
-export default function Note({
+export default function NoteCard({
   body,
   id,
   isNewNote,
   setIsNewNoteActive,
-}: NoteProps) {
+}: NoteCardProps) {
   return (
     <div className="border-b p-4 bg-accent rounded-md">
       {isNewNote && setIsNewNoteActive ? (

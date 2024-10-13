@@ -1,7 +1,7 @@
 import { formatISO } from "date-fns";
 import { Plus } from "lucide-react";
 import DatePicker from "~/components/date-picker";
-import Note from "~/components/note";
+import NoteCard from "~/components/note-card";
 import { Button } from "~/components/ui/button";
 import useNotesStore from "~/store/notes.store";
 
@@ -35,12 +35,12 @@ export default function NotesFeed() {
             ) : (
               <>
                 {noteListItems.map((note) => (
-                  <Note {...note} key={note.id} />
+                  <NoteCard {...note} key={note.id} />
                 ))}
               </>
             )}
             {isNewNoteActive ? (
-              <Note isNewNote setIsNewNoteActive={setIsNewNoteActive} />
+              <NoteCard isNewNote setIsNewNoteActive={setIsNewNoteActive} />
             ) : (
               <Button onClick={() => setIsNewNoteActive(true)}>
                 <Plus className="mr-2 h-4 w-4" />
