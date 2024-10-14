@@ -1,5 +1,6 @@
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import {
   Drawer,
   DrawerClose,
@@ -40,7 +41,7 @@ export default function NoteCard() {
           <DrawerTitle>Note Details</DrawerTitle>
           <DrawerDescription></DrawerDescription>
         </DrawerHeader>
-        <div className="whitespace-pre py-6 max-w-96 mx-auto">
+        <div className="whitespace-pre py-6 max-w-96 mx-auto w-full">
           {isEditing ? (
             <Textarea
               // eslint-disable-next-line jsx-a11y/no-autofocus
@@ -52,7 +53,7 @@ export default function NoteCard() {
               className="w-full bg-transparent border-0"
             />
           ) : (
-            activeNote.body
+            <ReactMarkdown>{activeNote.body ?? ""}</ReactMarkdown>
           )}
         </div>
         <DrawerFooter>
