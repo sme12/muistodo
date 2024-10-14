@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import useNotesStore from "~/store/notes.store";
 
 import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
+import { AutosizeTextarea } from "./ui/textarea";
 
 export default function NewNote() {
   const fetcher = useFetcher();
@@ -37,14 +37,14 @@ export default function NewNote() {
     <div className="border-b p-4 bg-accent rounded-md">
       <fetcher.Form action="api/new" method="post">
         <div className="grid w-full gap-2">
-          <Textarea
+          <AutosizeTextarea
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             name="body"
-            rows={4}
             value={body}
+            maxHeight={200}
             onChange={(e) => setBody(e.target.value)}
-            className="w-full bg-transparent border-0 focus:"
+            className="w-full bg-transparent border-0"
           />
           <input type="hidden" name="date" value={selectedDate} />
           <div className="grid grid-cols-[1fr_auto] gap-4">

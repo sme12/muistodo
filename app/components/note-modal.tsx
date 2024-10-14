@@ -13,7 +13,7 @@ import {
 import useNotesStore from "~/store/notes.store";
 
 import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
+import { AutosizeTextarea } from "./ui/textarea";
 
 export default function NoteCard() {
   const { activeNote, noteModalOpen, setNoteModalOpen } = useNotesStore();
@@ -43,12 +43,12 @@ export default function NoteCard() {
         </DrawerHeader>
         <div className="whitespace-pre py-6 max-w-96 mx-auto w-full">
           {isEditing ? (
-            <Textarea
+            <AutosizeTextarea
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
               name="body"
-              rows={4}
               value={body}
+              maxHeight={200}
               onChange={(e) => setBody(e.target.value)}
               className="w-full bg-transparent border-0"
             />
