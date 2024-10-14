@@ -10,7 +10,7 @@ export default function NewNote() {
   const fetcher = useFetcher();
   const isSubmitting = fetcher.state === "submitting";
 
-  const { setIsNewNoteActive } = useNotesStore();
+  const { setIsNewNoteActive, selectedDate } = useNotesStore();
 
   const [body, setBody] = useState("");
 
@@ -46,6 +46,7 @@ export default function NewNote() {
             onChange={(e) => setBody(e.target.value)}
             className="w-full bg-transparent border-0 focus:"
           />
+          <input type="hidden" name="date" value={selectedDate} />
           <div className="grid grid-cols-[1fr_auto] gap-4">
             <Button disabled={isSubmitting} type="submit">
               {isSubmitting ? (
