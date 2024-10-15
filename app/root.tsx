@@ -19,7 +19,7 @@ import stylesheet from "~/tailwind.css";
 export const meta: MetaFunction = () => [
   {
     charset: "utf-8",
-    title: "New Remix App",
+    title: "MuisTODO",
     viewport: "width=device-width,initial-scale=1",
   },
 ];

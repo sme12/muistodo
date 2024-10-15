@@ -1,8 +1,7 @@
-import { UserButton } from "@clerk/remix";
 import { getAuth } from "@clerk/remix/ssr.server";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import { formatISO, parseISO } from "date-fns";
 import { useEffect } from "react";
 import NotesFeed from "~/components/notes-feed";
@@ -58,18 +57,5 @@ export default function NotesPage() {
     setIsReady,
   ]);
 
-  return (
-    <div className="flex flex-col">
-      <header className="flex items-center justify-between p-4 text-white">
-        <h1 className="text-3xl font-bold">
-          <Link to=".">MuisTODO</Link>
-        </h1>
-        <UserButton />
-      </header>
-
-      <main>
-        <NotesFeed />
-      </main>
-    </div>
-  );
+  return <NotesFeed />;
 }
