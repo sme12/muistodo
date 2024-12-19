@@ -2,11 +2,9 @@
 
 Note another TODO app.
 
-Bootstrapped with Remix Indie Stack.
-Learn more about [Remix Stacks](https://remix.run/stacks).
-
 ## What's in the box
 
+- Tanstack Start
 - [Fly app deployment](https://fly.io) with [Docker](https://www.docker.com/)
 - Production-ready [SQLite Database](https://sqlite.org)
 - Healthcheck endpoint for [Fly backups region fallbacks](https://fly.io/docs/reference/configuration/#services-http_checks)
@@ -25,7 +23,7 @@ Learn more about [Remix Stacks](https://remix.run/stacks).
 - Initial setup:
 
   ```sh
-  npm run setup
+  npm install
   ```
 
 - Start dev server:
@@ -46,9 +44,7 @@ We use GitHub Actions for continuous integration and deployment. Anything that g
 
 ## Testing
 
-### Vitest
-
-For lower level tests of utilities and individual components, we use `vitest`. We have DOM-specific assertion helpers via [`@testing-library/jest-dom`](https://testing-library.com/jest-dom).
+TODO
 
 ### Linting
 

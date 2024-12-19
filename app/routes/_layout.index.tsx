@@ -4,6 +4,7 @@ import { createServerFn } from "@tanstack/start";
 import { formatISO } from "date-fns";
 import { useEffect } from "react";
 import { getWebRequest } from "vinxi/http";
+import NotesFeed from "~/components/notes-feed";
 import { getNotesListItemsByDate } from "~/models/note.server";
 import useNotesStore from "~/store/notes.store";
 
@@ -33,7 +34,7 @@ const notesFn = createServerFn({ method: "GET" })
     return { noteListItems, selectedDate: date };
   });
 
-export const Route = createFileRoute("/_layout/todos")({
+export const Route = createFileRoute("/_layout/")({
   component: NotesPage,
   loaderDeps: ({ search }: { search: { date?: string } }) => ({
     date: search.date,
@@ -57,10 +58,5 @@ export default function NotesPage() {
     setIsReady,
   ]);
 
-  return (
-    <div className="container">
-      <div>{data.selectedDate}</div>
-      <div>TODOs will be here</div>
-    </div>
-  );
+  return <NotesFeed />;
 }

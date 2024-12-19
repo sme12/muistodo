@@ -1,4 +1,4 @@
-import { useFetcher } from "@remix-run/react";
+import { useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import {
@@ -10,6 +10,8 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "~/components/ui/drawer";
+import { deleteNote } from "~/functions/delete-note";
+import { updateNote } from "~/functions/update-note";
 import useNotesStore from "~/store/notes.store";
 
 import { Button } from "./ui/button";
@@ -17,15 +19,9 @@ import { AutosizeTextarea } from "./ui/textarea";
 
 export default function NoteCard() {
   const { activeNote, noteModalOpen, setNoteModalOpen } = useNotesStore();
-  const fetcher = useFetcher();
   const [isEditing, setIsEditing] = useState(false);
   const [body, setBody] = useState("");
-
-  useEffect(() => {
-    if (fetcher.state === "idle") {
-      setNoteModalOpen(false);
-    }
-  }, [fetcher.state, setNoteModalOpen]);
+  const router = useRouter();
 
   useEffect(() => {
     if (!noteModalOpen) {
@@ -44,7 +40,6 @@ export default function NoteCard() {
         <div className="whitespace-pre py-6 max-w-96 mx-auto w-full">
           {isEditing ? (
             <AutosizeTextarea
-              // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
               name="body"
               value={body}
@@ -68,18 +63,38 @@ export default function NoteCard() {
                 Edit
               </Button>
             ) : (
-              <fetcher.Form action={"api/update"} method="post">
-                <input type="hidden" name="noteId" value={activeNote.id} />
-                <input type="hidden" name="body" value={body} />
-                <Button type="submit">Save</Button>
-              </fetcher.Form>
+              <Button
+                onClick={() => {
+                  const data = {
+                    noteId: activeNote.id,
+                    body,
+                  };
+                  updateNote({
+                    data,
+                  });
+                  setNoteModalOpen(false);
+                  router.invalidate();
+                }}
+              >
+                Save
+              </Button>
             )}
 
-            <fetcher.Form action={`api/delete/${activeNote.id}`} method="post">
-              <Button type="submit" variant="destructive">
-                Delete
-              </Button>
-            </fetcher.Form>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                const data = {
+                  noteId: activeNote.id,
+                };
+                deleteNote({
+                  data,
+                });
+                setNoteModalOpen(false);
+                router.invalidate();
+              }}
+            >
+              Delete
+            </Button>
             <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>
             </DrawerClose>

@@ -1,4 +1,4 @@
-import { useSearchParams } from "@remix-run/react";
+import { useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useState } from "react";
@@ -12,15 +12,18 @@ import {
 import { cn } from "~/lib/utils";
 
 export default function DatePicker({ initialDate }: { initialDate: string }) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate({ from: "/" });
   const [open, setOpen] = useState(false);
 
   const handleDateChange = (date: Date | undefined) => {
     if (date) {
-      setSearchParams({ date: format(date, "yyyy-MM-dd") });
+      navigate({
+        search: { date: format(date, "yyyy-MM-dd") },
+      });
     } else {
-      setSearchParams({});
+      navigate({
+        search: undefined,
+      });
     }
     setOpen(false);
   };

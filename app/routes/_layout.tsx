@@ -1,6 +1,10 @@
-import { UserButton } from "@clerk/remix";
-import { Link, Outlet } from "@remix-run/react";
+import { UserButton } from "@clerk/tanstack-start";
+import { Link, Outlet, createFileRoute } from "@tanstack/react-router";
 import { buttonVariants } from "~/components/ui/button";
+
+export const Route = createFileRoute("/_layout")({
+  component: NotesPage,
+});
 
 export default function NotesPage() {
   return (
