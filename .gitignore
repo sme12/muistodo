@@ -2,7 +2,11 @@ node_modules
 
 /build
 /public/build
+/.output
+/.vinxi
 .env
 
 /prisma/data.db
 /prisma/data.db-journal
+
+/app/routeTree.gen.ts
